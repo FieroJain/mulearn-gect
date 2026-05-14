@@ -13,17 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Member Data
     const members = [
-        { name: "Fiero Jain", role: "Campus Lead", quote: "We didn't inherit a stage. We built one.", linkedin: "https://linkedin.com/in/fiero", instagram: "https://instagram.com/fiero", email: "fiero@example.com" },
-        { name: "Hemanth Krishna A B", role: "Co-Campus Lead", quote: "Getting council approval was harder than any exam.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Parthan Rajesh", role: "Tech Team", quote: "We built the backend before we had a frontend audience.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Tony James", role: "Tech Team", quote: "Code was easy. Getting people to believe was the real challenge.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Mukhthar Ahmed Yaseen O", role: "Visual & Media Lead", quote: "Every pixel we placed, we placed with intent.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Badusha Pareed", role: "Creative Team", quote: "Ideas are cheap. Execution is everything.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Abhijith K V", role: "Management Team", quote: "Operations is the invisible engine.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Akshay Saju", role: "Management Team", quote: "Community happens when you listen first.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Anirudh P", role: "Management Team", quote: "We turned 'no' into 'how'.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Hridya Sivarajan", role: "Management Team", quote: "Organising chaos is an art form.", linkedin: "#", instagram: "#", email: "#" },
-        { name: "Sreeram P", role: "Management Team", quote: "I kept the wheels turning while everyone else steered.", linkedin: "#", instagram: "#", email: "#" }
+        { name: "Fiero Jain", role: "Campus Lead", quote: "We didn't inherit a stage. We built one.", linkedin: "https://linkedin.com/in/fiero", instagram: "https://instagram.com/fiero", email: "fierojain12@gmail.com" },
+        { name: "Hemanth Krishna A B", role: "Co-Campus Lead", quote: "Getting council approval was harder than any exam.", linkedin: "#", instagram: "#", email: "hemanthkrishnabiju@gmail.com" },
+        { name: "Parthan Rajesh", role: "Tech Team", quote: "We built the backend before we had a frontend audience.", linkedin: "#", instagram: "#", email: "parthanrajesh863@gmail.com" },
+        { name: "Tony James", role: "Tech Team", quote: "Code was easy. Getting people to believe was the real challenge.", linkedin: "#", instagram: "#", email: "tonimanthara@gmail.com" },
+        { name: "Mukhthar Ahmed Yaseen O", role: "Visual & Media Lead", quote: "Every pixel we placed, we placed with intent.", linkedin: "#", instagram: "#", email: "yaseenmjri@gmail.com" },
+        { name: "Badusha Pareed", role: "Creative Team", quote: "Ideas are cheap. Execution is everything.", linkedin: "#", instagram: "#", email: "badushapareeth777@gmail.com" },
+        { name: "Abhijith K V", role: "Management Team", quote: "Operations is the invisible engine.", linkedin: "#", instagram: "#", email: "abhijithkv369@gmail.com" },
+        { name: "Akshay Saju", role: "Management Team", quote: "Community happens when you listen first.", linkedin: "#", instagram: "#", email: "akshaysaju39@gmail.com" },
+        { name: "Anirudh P", role: "Management Team", quote: "We turned 'no' into 'how'.", linkedin: "#", instagram: "#", email: "aniabc2004@gmail.com" },
+        { name: "Hridya Sivarajan", role: "Management Team", quote: "Organising chaos is an art form.", linkedin: "#", instagram: "#", email: "hridyasivarajan@gmail.com" },
+        { name: "Sreeram P", role: "Management Team", quote: "I kept the wheels turning while everyone else steered.", linkedin: "#", instagram: "#", email: "sreeramparangodathxp@gmail.com" }
     ];
 
     // Render Members
@@ -64,12 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons(); // Re-init icons for new cards
 
     // --- GSAP ANIMATIONS ---
-
-    // Set global default — animations reverse when scrolling back up (Fix 5)
     gsap.registerPlugin(ScrollTrigger);
-    ScrollTrigger.defaults({
-        toggleActions: 'play none none reverse'
-    });
+
+    // Create matchMedia instance
+    let mm = gsap.matchMedia();
 
     // 1. Page Intro Sequence
     const intro = gsap.timeline();
@@ -97,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .set('#intro-screen', { display: 'none' })
         .set('body', { overflow: 'auto' })
-        .from('#hero-content', {
+        .from('.hero-content', {
             opacity: 0,
             y: 30,
             duration: 1.2,
@@ -107,9 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
         .from('.hero-watermark', { opacity: 0, duration: 2 }, "-=1")
         .to('#sound-prompt', { display: 'block', opacity: 1, duration: 0.5 });
 
-    // 2. Custom Gold Cursor (Fix 2)
+    // 2. Custom Gold Cursor (Desktop Only)
     const cursor = document.querySelector('#cursor');
-    if (cursor) {
+    if (cursor && !document.body.classList.contains('touch-device')) {
         window.addEventListener('mousemove', (e) => {
             gsap.to(cursor, {
                 x: e.clientX,
@@ -120,73 +118,108 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Staggered Text Reveal
-    gsap.utils.toArray('.reveal-text').forEach(text => {
-        gsap.from(text, {
+    // Scroll-triggered animations with breakpoints
+    mm.add({
+        isDesktop: "(min-width: 769px)",
+        isMobile: "(max-width: 768px)"
+    }, (context) => {
+        let { isDesktop, isMobile } = context.conditions;
+
+        // 3. Staggered Text Reveal
+        gsap.utils.toArray('.reveal-text').forEach(text => {
+            gsap.from(text, {
+                scrollTrigger: {
+                    trigger: text,
+                    start: 'top 90%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: isDesktop ? 20 : 10,
+                duration: 1,
+                ease: 'power3.out'
+            });
+        });
+
+        // 4. Origin Block Reveal
+        gsap.utils.toArray('.reveal-block').forEach(block => {
+            gsap.from(block.children, {
+                scrollTrigger: {
+                    trigger: block,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: isDesktop ? 30 : 15,
+                stagger: 0.1,
+                duration: 1.2,
+                ease: 'power3.out'
+            });
+        });
+
+        // 5. Timeline Line Drawing (Desktop Only usually, but let's keep it if container exists)
+        if (document.querySelector('.origin-timeline')) {
+            gsap.from('#origin-line', {
+                scrollTrigger: {
+                    trigger: '.origin-timeline',
+                    start: 'top center',
+                    end: 'bottom center',
+                    scrub: 1,
+                },
+                scaleY: 0,
+                transformOrigin: "top center",
+                ease: 'none'
+            });
+        }
+
+        // 6. Member Cards Staggered Entrance
+        gsap.from('.member-card', {
             scrollTrigger: {
-                trigger: text,
-                start: 'top 85%',
+                trigger: '#eleven',
+                start: 'top 75%',
+                toggleActions: 'play none none reverse'
             },
             opacity: 0,
-            y: 20,
-            duration: 1,
+            y: isDesktop ? 40 : 20,
+            stagger: isDesktop ? 0.1 : 0.05,
+            duration: 0.8,
             ease: 'power3.out'
         });
-    });
 
-    // 4. Origin Block Reveal
-    gsap.utils.toArray('.reveal-block').forEach(block => {
-        gsap.from(block.children, {
+        // 7. Event Cards Timeline v2
+        gsap.utils.toArray('.event-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                x: isDesktop ? (i % 2 === 0 ? -50 : 50) : 0,
+                y: isDesktop ? 0 : 30,
+                duration: 1,
+                ease: 'power3.out'
+            });
+        });
+
+        /* 
+        // 9. Chapter Vault Row Entrance
+        gsap.from('.chapter-vault-card', {
             scrollTrigger: {
-                trigger: block,
-                start: 'top 80%',
+                trigger: '.chapters-row',
+                start: 'top 95%', // Trigger slightly earlier
+                toggleActions: 'play none none reverse'
             },
             opacity: 0,
-            y: 30,
-            stagger: 0.2,
-            duration: 1.2,
-            ease: 'power3.out'
+            y: 20, // Gentle upward reveal
+            stagger: 0.1,
+            duration: 0.8,
+            ease: 'power2.out'
         });
-    });
+        */
 
-    // 5. Timeline Line Drawing
-    gsap.from('#origin-line', {
-        scrollTrigger: {
-            trigger: '.origin-timeline',
-            start: 'top center',
-            end: 'bottom center',
-            scrub: 1,
-        },
-        scaleY: 0,
-        transformOrigin: "top center",
-        ease: 'none'
-    });
-
-    // 6. Member Cards Staggered Entrance
-    gsap.from('.member-card', {
-        scrollTrigger: {
-            trigger: '#eleven',
-            start: 'top 70%',
-        },
-        opacity: 0,
-        y: 40,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: 'power3.out'
-    });
-
-    // 7. Event Cards Timeline v2
-    gsap.utils.toArray('.event-card').forEach((card, i) => {
-        gsap.from(card, {
-            scrollTrigger: {
-                trigger: card,
-                start: 'top 80%',
-            },
-            opacity: 0,
-            x: i % 2 === 0 ? -50 : 50,
-            duration: 1,
-            ease: 'power3.out'
-        });
+        return () => {
+            // Clean up if needed
+        };
     });
 
     // 8. Gallery Color Bleed Tap Handler (Fix 3)
@@ -196,18 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 9. Chapter Vault Row Parallax/Scroll
-    gsap.from('.chapter-vault-card', {
-        scrollTrigger: {
-            trigger: '#chapters',
-            start: 'top 80%',
-        },
-        opacity: 0,
-        x: 100,
-        stagger: 0.15,
-        duration: 1,
-        ease: 'power3.out'
-    });
+
 
     // Audio Handling (Fix 4)
     const unmuteBtn = document.getElementById('unmute-btn');
